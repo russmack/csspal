@@ -4,8 +4,10 @@
 ]#
 
 import os
-import strutils
 import re
+import algorithm
+import sequtils
+import strutils
 
 proc html(elems: varargs[string]): string =
   var a: string = "<html>\n" 
@@ -43,6 +45,12 @@ proc extractColours(text: string): seq[string] =
     colours.add(matches)
   return colours
 
+proc orderColours(colours: seq[string]): seq[string] =
+  var colours = colours
+  sort(colours, system.cmp)
+  colours = deduplicate(colours, isSorted = true)
+  return colours
+
 proc readArg(): string =
   if paramCount() != 1:
     echo "Usage: main my.css"
@@ -53,8 +61,9 @@ proc readArg(): string =
 proc main() =
   let cssFile = readArg()
   let text = readFile(cssFile)
-  let colours = extractColours(text)
-  let colour_elems = makeColourElems(colours)
+  var colours = extractColours(text)
+  colours = orderColours(colours)
+  let colourElems = makeColourElems(colours)
   echo (
     html(
       head(), 
