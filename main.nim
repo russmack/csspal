@@ -34,7 +34,17 @@ proc body(elems: varargs[string]): string =
 proc makeColourElems(colours: seq[string]): seq[string] =
   var elems: seq[string]
   for col in colours:
-    elems.add("<div style='background-color: " & col & ";'>" & col & "</div>\n")
+    elems.add("<div>" & 
+      "<span style='background-color: " & col & "; width: 30px; height: 20px; display: inline-block;'></span>&nbsp;" &
+      "<span style='font-family: Helvetica,sans-serif;'>" & col & "</span>" & 
+      "</div>\n")
+  return elems
+
+proc makePageHeader(cssFileName: string): seq[string] =
+  var elems: seq[string]
+  elems.add("<div style='font-family: Helvetica, sans-serif'>Web Colour Palette</div>")  # Title
+  elems.add("<div style='font-family: Helvetica, sans-serif'>Extracted from file: " & cssFileName & "</div>")  # Subtitle
+  elems.add("<hr style='border-top: 1px;' />")  # Header break
   return elems
 
 proc extractColours(text: string): seq[string] =
@@ -59,15 +69,17 @@ proc readArg(): string =
   return arg
 
 proc main() =
-  let cssFile = readArg()
-  let text = readFile(cssFile)
+  let cssFileName = readArg()
+  let text = readFile(cssFileName)
   var colours = extractColours(text)
   colours = orderColours(colours)
   let colourElems = makeColourElems(colours)
+  let pageHeader = makePageHeader(cssFileName)
+  let pageElems = pageHeader & colourElems
   echo (
     html(
-      head(), 
-      body(colourElems)
+      head(),
+      body(pageElems)
     )
   )
 
