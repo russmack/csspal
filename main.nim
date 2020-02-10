@@ -1,6 +1,6 @@
 #[
   Reads a css file, extracts the colours, 
-  and outputs a html palette.
+  and outputs an html palette.
 ]#
 
 import os
@@ -9,27 +9,22 @@ import algorithm
 import sequtils
 import strutils
 
-proc html(elems: varargs[string]): string =
-  var a: string = "<html>\n" 
+proc element(tag: string, elems: varargs[string]): string =
+  var a: string = "<$1>\n" % [tag] 
   for el in elems:
     add(a, el)
-  var b: string = "</html>"
+  var b: string = "</$1>\n" % [tag]
   add(a, b)
   return a
 
+proc html(elems: varargs[string]): string =
+  return element("html", elems)
+
 proc head(elems: varargs[string]): string =
-  var a: string = "<head>\n"
-  for el in elems:
-    add(a, el)
-  add(a, "</head>\n")
-  return a
+  return element("head", elems)
 
 proc body(elems: varargs[string]): string =
-  var a: string = "<body>\n"
-  for el in elems:
-    add(a, el)
-  add(a, "</body>\n")
-  return a
+  return element("body", elems)
 
 proc makeColourElems(colours: seq[string]): seq[string] =
   var elems: seq[string]
@@ -42,9 +37,9 @@ proc makeColourElems(colours: seq[string]): seq[string] =
 
 proc makePageHeader(cssFileName: string): seq[string] =
   var elems: seq[string]
-  elems.add("<div style='font-family: Helvetica, sans-serif'>Web Colour Palette</div>")  # Title
-  elems.add("<div style='font-family: Helvetica, sans-serif'>Extracted from file: " & cssFileName & "</div>")  # Subtitle
-  elems.add("<hr style='border-top: 1px;' />")  # Header break
+  elems.add("<div style='font-family: Helvetica, sans-serif'>Web Colour Palette</div>\n")  # Title
+  elems.add("<div style='font-family: Helvetica, sans-serif'>Extracted from file: " & cssFileName & "</div>\n")  # Subtitle
+  elems.add("<hr style='border-top: 1px;' />\n")  # Header break
   return elems
 
 proc extractColours(text: string): seq[string] =
